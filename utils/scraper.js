@@ -96,6 +96,28 @@ const scrapeAndSeed = async function () {
 
     const oldestArticles = articles.slice(-5);
 
+    for (const articleData of oldestArticles) {
+      try {
+        console.log(`Visiting article link: ${articleData.link}`);
+        const { data: pageData } = await axios.get(
+          articleData.link,
+          axiosOptions
+        );
+        const $page = cheerio.load(pageData);
+
+        const fullContent = $page('.elementor-widget-theme-post-content')
+          .text()
+          .trim();
+
+        articleData.content = fullContent;
+      } catch (error) {
+        console.error(
+          `Error fetching content for ${articleData.link}:`,
+          error.message
+        );
+      }
+    }
+
     if (oldestArticles.length > 0) {
       await article.insertMany(oldestArticles);
       console.log(`Successfully scrapped ${oldestArticles.length} articles.`);
