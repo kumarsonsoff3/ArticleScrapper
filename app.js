@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/db');
 const scrapeAndSeed = require('./utils/scraper');
+const enhanceArticles = require('./utils/contentEnhancer');
 const articleRoutes = require('./routes/articleRoutes');
 
 const app = express();
@@ -16,6 +17,7 @@ app.use('/api/v1/articles', articleRoutes);
 const startServer = async () => {
   await connectDB();
   await scrapeAndSeed();
+  await enhanceArticles();
 
   app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
